@@ -10,7 +10,7 @@ import java.util.UUID;
  * @author sunchaser admin@lilu.org.cn
  * @since JDK8 2021/10/22
  */
-public class DefaultFileNameGenerator extends AbstractFileNameGenerator {
+public class UUIDFileNameGenerator extends AbstractFileNameGenerator {
 
     @Override
     protected String doGenerateFileName(MultipartFile multipartFile, String fileSuffix) {

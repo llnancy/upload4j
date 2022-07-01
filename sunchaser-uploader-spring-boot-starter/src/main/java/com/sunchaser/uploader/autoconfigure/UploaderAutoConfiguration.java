@@ -47,7 +47,7 @@ public class UploaderAutoConfiguration {
     @Getter
     enum FileNameGeneratorEnum {
 
-        DEFAULT("UUID", DefaultFileNameGenerator::new)
+        DEFAULT("UUID", UUIDFileNameGenerator::new)
         ;
 
         private final String key;

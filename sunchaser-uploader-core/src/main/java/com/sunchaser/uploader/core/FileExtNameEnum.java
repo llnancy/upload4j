@@ -13,7 +13,10 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum FileExtNameEnum {
 
-    JPEG("jpg", "JPEG (jpg)"),
+    ANY("", ""),
+
+    JPG("jpg", "JPEG (jpg)"),
+    JPEG("jpeg", "JPEG (jpg)"),
     PNG("png", "PNG (png)"),
     GIF("gif", "GIF (gif)"),
 
