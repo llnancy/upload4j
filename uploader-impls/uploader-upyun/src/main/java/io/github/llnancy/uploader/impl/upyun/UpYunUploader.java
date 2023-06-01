@@ -4,11 +4,12 @@ import cn.hutool.core.map.MapUtil;
 import com.google.common.base.Preconditions;
 import com.upyun.RestManager;
 import com.upyun.UpYunUtils;
-import io.github.llnancy.uploader.api.UploaderException;
+import io.github.llnancy.uploader.api.FileUriGenerator;
+import io.github.llnancy.uploader.api.config.UploaderConfig;
+import io.github.llnancy.uploader.api.exceptions.UploaderException;
 import io.github.llnancy.uploader.core.AbstractUploader;
-import io.github.llnancy.uploader.core.fileuri.FileUriGenerator;
-import io.github.llnancy.uploader.core.fileuri.impl.SpecifyPathFileUriGenerator;
-import io.github.llnancy.uploader.impl.upyun.config.UpYunProperties;
+import io.github.llnancy.uploader.impl.upyun.config.UpYunConfig;
+import io.github.nativegroup.spi.NativeServiceLoader;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Headers;
@@ -28,26 +29,35 @@ import java.util.Objects;
 public class UpYunUploader extends AbstractUploader {
 
     @Getter
-    private final UpYunProperties properties;
+    private UpYunConfig config;
 
     private RestManager restManager;
 
-    public UpYunUploader(UpYunProperties properties) {
-        this(new SpecifyPathFileUriGenerator(), properties);
+    public UpYunUploader() {
     }
 
-    public UpYunUploader(FileUriGenerator fileUriGenerator, UpYunProperties properties) {
+    public UpYunUploader(UpYunConfig properties) {
+        this(NativeServiceLoader.getNativeServiceLoader(FileUriGenerator.class).getDefaultNativeService(), properties);
+    }
+
+    public UpYunUploader(FileUriGenerator fileUriGenerator, UpYunConfig config) {
         super(fileUriGenerator);
-        this.properties = properties;
+        this.config = config;
         init();
     }
 
-    public void init() {
-        String bucketName = this.properties.getBucketName();
-        String userName = this.properties.getUserName();
-        String password = this.properties.getPassword();
-        String apiDomain = this.properties.getApiDomain().getApiDomain();
-        Integer timeout = this.properties.getTimeout();
+    @Override
+    public void setConfig(UploaderConfig config) {
+        this.config = (UpYunConfig) config;
+    }
+
+    @Override
+    protected void doInit() {
+        String bucketName = this.config.getBucketName();
+        String userName = this.config.getUserName();
+        String password = this.config.getPassword();
+        String apiDomain = this.config.getApiDomain().getApiDomain();
+        Integer timeout = this.config.getTimeout();
         Preconditions.checkArgument(StringUtils.isNotBlank(bucketName), "[upyun] - 又拍云配置 - 空间名 bucketName 不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(userName), "[upyun] - 又拍云配置 - 操作员名 userName 不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(password), "[upyun] - 又拍云配置 - 操作员密码 password 不能为空");
@@ -56,11 +66,10 @@ public class UpYunUploader extends AbstractUploader {
         this.restManager = new RestManager(bucketName, userName, password);
         this.restManager.setApiDomain(apiDomain);
         this.restManager.setTimeout(timeout);
-        initServeDomain();
     }
 
     @Override
-    protected String doUpload(MultipartFile multipartFile, String fileUri) throws Exception {
+    protected String doUpload(MultipartFile mf, String fileUri) throws Exception {
         Response fileInfo = null;
         Response response = null;
         try {
@@ -68,14 +77,14 @@ public class UpYunUploader extends AbstractUploader {
             Headers headers = fileInfo.headers();
             String oldMd5 = headers.get(RestManager.PARAMS.CONTENT_MD5.getValue());
             String fileSize = headers.get(RestManager.PARAMS.X_UPYUN_FILE_SIZE.getValue());
-            String newMd5 = UpYunUtils.md5(multipartFile.getBytes());
+            String newMd5 = UpYunUtils.md5(mf.getBytes());
             if (StringUtils.isNotBlank(fileSize)) {
                 if (newMd5.equals(oldMd5)) {
                     log.warn("[upyun] - 又拍云文件上传，文件名：{}，md5值相同，上传文件重复", fileUri);
                     return this.getServeDomain() + fileUri;
                 }
             }
-            response = this.restManager.writeFile(fileUri, multipartFile.getInputStream(), MapUtil.of(RestManager.PARAMS.CONTENT_MD5.getValue(), newMd5));
+            response = this.restManager.writeFile(fileUri, mf.getInputStream(), MapUtil.of(RestManager.PARAMS.CONTENT_MD5.getValue(), newMd5));
             if (response.isSuccessful()) {
                 return this.getServeDomain() + fileUri;
             }

@@ -1,10 +1,11 @@
 package io.github.llnancy.uploader.impl.local;
 
 import cn.hutool.core.io.FileUtil;
+import io.github.llnancy.uploader.api.FileUriGenerator;
+import io.github.llnancy.uploader.api.config.UploaderConfig;
 import io.github.llnancy.uploader.core.AbstractUploader;
-import io.github.llnancy.uploader.core.fileuri.FileUriGenerator;
-import io.github.llnancy.uploader.core.fileuri.impl.SpecifyPathFileUriGenerator;
-import io.github.llnancy.uploader.impl.local.config.LocalProperties;
+import io.github.llnancy.uploader.impl.local.config.LocalConfig;
+import io.github.nativegroup.spi.NativeServiceLoader;
 import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,22 +18,30 @@ import org.springframework.web.multipart.MultipartFile;
 public class LocalUploader extends AbstractUploader {
 
     @Getter
-    private final LocalProperties properties;
+    private LocalConfig config;
 
-    public LocalUploader(LocalProperties properties) {
-        this(new SpecifyPathFileUriGenerator(), properties);
+    public LocalUploader() {
     }
 
-    public LocalUploader(FileUriGenerator fileUriGenerator, LocalProperties properties) {
+    public LocalUploader(LocalConfig properties) {
+        this(NativeServiceLoader.getNativeServiceLoader(FileUriGenerator.class).getDefaultNativeService(), properties);
+    }
+
+    public LocalUploader(FileUriGenerator fileUriGenerator, LocalConfig config) {
         super(fileUriGenerator);
-        this.properties = properties;
-        initServeDomain();
+        this.config = config;
+        init();
     }
 
     @Override
-    protected String doUpload(MultipartFile multipartFile, String fileUri) throws Exception {
-        String targetUri = this.properties.getLocalPath() + fileUri;
-        FileUtil.writeFromStream(multipartFile.getInputStream(), targetUri);
+    protected String doUpload(MultipartFile mf, String fileUri) throws Exception {
+        String targetUri = this.config.getLocalPath() + fileUri;
+        FileUtil.writeFromStream(mf.getInputStream(), targetUri);
         return this.getServeDomain() + targetUri;
+    }
+
+    @Override
+    public void setConfig(UploaderConfig config) {
+        this.config = (LocalConfig) config;
     }
 }

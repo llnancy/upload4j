@@ -1,16 +1,17 @@
 package io.github.llnancy.uploader.impl.upyun.test;
 
+import io.github.llnancy.uploader.api.FileUriGenerator;
 import io.github.llnancy.uploader.api.Uploader;
-import io.github.llnancy.uploader.core.filename.impl.OriginalFileNameGenerator;
-import io.github.llnancy.uploader.core.fileuri.impl.SpecifyPathFileUriGenerator;
+import io.github.llnancy.uploader.core.fu.SpecifyPathFileUriGenerator;
 import io.github.llnancy.uploader.impl.upyun.UpYunUploader;
-import io.github.llnancy.uploader.impl.upyun.config.UpYunProperties;
+import io.github.llnancy.uploader.impl.upyun.config.UpYunConfig;
+import io.github.nativegroup.spi.NativeServiceLoader;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.nio.file.Files;
 
 /**
  * Test {@link UpYunUploader}
@@ -22,16 +23,19 @@ public class UpYunUploaderTest {
 
     @Test
     public void test() throws Exception {
-        UpYunProperties properties = new UpYunProperties();
+        UpYunConfig properties = new UpYunConfig();
         properties.setServeDomain("https://images.lilu.org.cn");
         properties.setBucketName("llnancy-images");
         properties.setUserName("sunchaser");
-        properties.setPassword("xxxxxxxxx");
-        OriginalFileNameGenerator fileNameGenerator = new OriginalFileNameGenerator();
-        SpecifyPathFileUriGenerator fileUriGenerator = new SpecifyPathFileUriGenerator(fileNameGenerator, "acgn");
-        Uploader uploader = new UpYunUploader(fileUriGenerator, properties);
-        File file = new File("/Users/sunchaser/workspace/data/cartoon/0be8fbdb4837491f954c9e08af7815a5.png");
-        MockMultipartFile mockMultipartFile = new MockMultipartFile(file.getAbsolutePath(), file.getName(), MediaType.APPLICATION_OCTET_STREAM_VALUE, new FileInputStream(file));
+        properties.setPassword("xxxxxx");
+        SpecifyPathFileUriGenerator fileUriGenerator = (SpecifyPathFileUriGenerator) NativeServiceLoader.getNativeServiceLoader(FileUriGenerator.class).getNativeService("io.github.llnancy.uploader.core.fu.SpecifyPathFileUriGenerator");
+        fileUriGenerator.setSpecifyPath("/test");
+        Uploader uploader = NativeServiceLoader.getNativeServiceLoader(Uploader.class).getNativeService("io.github.llnancy.uploader.impl.upyun.UpYunUploader");
+        uploader.setFileUriGenerator(fileUriGenerator);
+        uploader.setConfig(properties);
+        uploader.init();
+        File file = new File("/Users/llnancy/workspace/data/4d2fec59f254487bad04bca59816edf0.png");
+        MockMultipartFile mockMultipartFile = new MockMultipartFile(file.getAbsolutePath(), file.getName(), MediaType.APPLICATION_OCTET_STREAM_VALUE, Files.newInputStream(file.toPath()));
         String upload = uploader.upload(mockMultipartFile);
         System.out.println(upload);
     }
