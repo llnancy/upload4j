@@ -37,7 +37,7 @@ public class LocalUploader extends AbstractUploader {
     protected String doUpload(MultipartFile mf, String fileUri) throws Exception {
         String targetUri = this.config.getLocalPath() + fileUri;
         FileUtil.writeFromStream(mf.getInputStream(), targetUri);
-        return this.getServeDomain() + targetUri;
+        return this.getProtocolHost() + targetUri;
     }
 
     @Override

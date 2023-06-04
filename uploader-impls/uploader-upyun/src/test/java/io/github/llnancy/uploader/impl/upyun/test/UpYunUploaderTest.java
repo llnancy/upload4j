@@ -29,14 +29,16 @@ public class UpYunUploaderTest {
         properties.setUserName("sunchaser");
         properties.setPassword("xxxxxx");
         SpecifyPathFileUriGenerator fileUriGenerator = (SpecifyPathFileUriGenerator) NativeServiceLoader.getNativeServiceLoader(FileUriGenerator.class).getNativeService("io.github.llnancy.uploader.core.fu.SpecifyPathFileUriGenerator");
-        fileUriGenerator.setSpecifyPath("/test");
+        // fileUriGenerator.setSpecifyPath("/test");
         Uploader uploader = NativeServiceLoader.getNativeServiceLoader(Uploader.class).getNativeService("io.github.llnancy.uploader.impl.upyun.UpYunUploader");
         uploader.setFileUriGenerator(fileUriGenerator);
         uploader.setConfig(properties);
         uploader.init();
         File file = new File("/Users/llnancy/workspace/data/4d2fec59f254487bad04bca59816edf0.png");
+        System.out.println(file.getAbsolutePath());
+        System.out.println(file.getName());
         MockMultipartFile mockMultipartFile = new MockMultipartFile(file.getAbsolutePath(), file.getName(), MediaType.APPLICATION_OCTET_STREAM_VALUE, Files.newInputStream(file.toPath()));
-        String upload = uploader.upload(mockMultipartFile);
+        String upload = uploader.upload(mockMultipartFile, "top");
         System.out.println(upload);
     }
 }

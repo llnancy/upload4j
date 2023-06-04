@@ -1,1 +1,2 @@
 io.github.llnancy.uploader.core.fu.SpecifyPathFileUriGenerator
+io.github.llnancy.uploader.core.fu.LocalDateFileUriGenerator

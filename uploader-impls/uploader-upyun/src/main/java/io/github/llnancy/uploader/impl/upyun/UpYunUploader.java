@@ -75,18 +75,18 @@ public class UpYunUploader extends AbstractUploader {
         try {
             fileInfo = this.restManager.getFileInfo(fileUri);
             Headers headers = fileInfo.headers();
-            String oldMd5 = headers.get(RestManager.PARAMS.CONTENT_MD5.getValue());
             String fileSize = headers.get(RestManager.PARAMS.X_UPYUN_FILE_SIZE.getValue());
             String newMd5 = UpYunUtils.md5(mf.getBytes());
             if (StringUtils.isNotBlank(fileSize)) {
+                String oldMd5 = headers.get(RestManager.PARAMS.CONTENT_MD5.getValue());
                 if (newMd5.equals(oldMd5)) {
                     log.warn("[upyun] - 又拍云文件上传，文件名：{}，md5值相同，上传文件重复", fileUri);
-                    return this.getServeDomain() + fileUri;
+                    return this.getProtocolHost() + fileUri;
                 }
             }
             response = this.restManager.writeFile(fileUri, mf.getInputStream(), MapUtil.of(RestManager.PARAMS.CONTENT_MD5.getValue(), newMd5));
             if (response.isSuccessful()) {
-                return this.getServeDomain() + fileUri;
+                return this.getProtocolHost() + fileUri;
             }
             log.error("[upyun] - 又拍云文件上传失败，response={}", response);
             throw new UploaderException("[upyun] - 又拍云文件上传失败，fileUri=" + fileUri);

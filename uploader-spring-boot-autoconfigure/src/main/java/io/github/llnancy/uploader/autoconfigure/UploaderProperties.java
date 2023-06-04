@@ -3,6 +3,8 @@ package io.github.llnancy.uploader.autoconfigure;
 import io.github.llnancy.uploader.api.FileNameGenerator;
 import io.github.llnancy.uploader.api.FileUriGenerator;
 import io.github.llnancy.uploader.api.Uploader;
+import io.github.llnancy.uploader.core.fn.OriginalFileNameGenerator;
+import io.github.llnancy.uploader.core.fu.SpecifyPathFileUriGenerator;
 import io.github.llnancy.uploader.impl.local.config.LocalConfig;
 import io.github.llnancy.uploader.impl.upyun.config.UpYunConfig;
 import lombok.Data;
@@ -21,9 +23,9 @@ public class UploaderProperties {
 
     private Class<? extends Uploader> uploaderClassName;
 
-    private Class<? extends FileNameGenerator> fileNameGeneratorClassName;
+    private Class<? extends FileNameGenerator> fileNameGeneratorClassName = OriginalFileNameGenerator.class;
 
-    private Class<? extends FileUriGenerator> fileUriGeneratorClassName;
+    private Class<? extends FileUriGenerator> fileUriGeneratorClassName = SpecifyPathFileUriGenerator.class;
 
     private String specifyPath;
 

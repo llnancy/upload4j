@@ -1,9 +1,7 @@
 package io.github.llnancy.uploader.core.fu;
 
-import io.github.llnancy.uploader.api.FileNameGenerator;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.time.LocalDate;
 
 /**
@@ -20,6 +18,7 @@ public class LocalDateFileUriGenerator extends AbstractFileUriGenerator {
         String year = now.getYear() + "/";
         String month = now.getMonth().getValue() + "/";
         String day = String.valueOf(now.getDayOfMonth());
+        // eg. 2021/10/22
         return year + month + day;
     }
 }

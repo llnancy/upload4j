@@ -6,11 +6,13 @@ import io.github.llnancy.uploader.api.FileUriGenerator;
 import io.github.llnancy.uploader.api.Uploader;
 import io.github.llnancy.uploader.api.config.UploaderConfig;
 import io.github.llnancy.uploader.api.exceptions.UploaderException;
+import io.github.llnancy.uploader.core.fu.SpecifyPathFileUriGenerator;
 import io.github.nativegroup.spi.NativeServiceLoader;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -52,6 +54,17 @@ public abstract class AbstractUploader implements Uploader {
         return getConfig().getServeDomain();
     }
 
+    protected String getProtocolHost() {
+        try {
+            URL url = new URL(getServeDomain());
+            String protocol = url.getProtocol();
+            String domain = url.getHost();
+            return protocol + "://" + domain;
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public abstract UploaderConfig getConfig();
 
     public boolean supportFileType(String type) {
@@ -60,11 +73,22 @@ public abstract class AbstractUploader implements Uploader {
 
     @Override
     public String upload(MultipartFile mf) throws UploaderException {
+        return upload(mf, SpecifyPathFileUriGenerator.DEFAULT_SPECIFY_PATH);
+    }
+
+    @Override
+    public String upload(MultipartFile mf, String basePath) throws UploaderException {
         try {
             String type = FileTypeUtil.getType(mf.getInputStream(), mf.getOriginalFilename());
             Preconditions.checkArgument(supportFileType(type), "文件格式有误");
             String fileUri = this.fileUriGenerator.generate(mf);
-            return doUpload(mf, new URL(this.getServeDomain()).getPath() + fileUri);
+            if (StringUtils.isNotEmpty(basePath) && !StringUtils.startsWith(basePath, "/")) {
+                basePath = "/" + basePath;
+            }
+            if (StringUtils.isNotEmpty(basePath) && !StringUtils.endsWith(basePath, "/")) {
+                basePath = basePath + "/";
+            }
+            return doUpload(mf, new URL(this.getServeDomain()).getPath() + basePath + fileUri);
         } catch (Exception e) {
             throw new UploaderException(e);
         }
