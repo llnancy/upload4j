@@ -31,6 +31,7 @@ public class UpYunUploader extends AbstractUploader {
     @Getter
     private UpYunConfig config;
 
+    @Getter
     private RestManager restManager;
 
     public UpYunUploader() {
