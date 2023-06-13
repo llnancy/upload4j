@@ -41,6 +41,11 @@ public class LocalUploader extends AbstractUploader {
     }
 
     @Override
+    protected boolean doDelete(String path) throws Exception {
+        return FileUtil.del(path);
+    }
+
+    @Override
     public void setConfig(UploaderConfig config) {
         this.config = (LocalConfig) config;
     }

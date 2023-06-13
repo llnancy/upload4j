@@ -100,4 +100,11 @@ public class UpYunUploader extends AbstractUploader {
             }
         }
     }
+
+    @Override
+    protected boolean doDelete(String path) throws Exception {
+        try (Response response = this.restManager.deleteFile(path, null)) {
+            return response.isSuccessful();
+        }
+    }
 }

@@ -4,6 +4,7 @@ import io.github.llnancy.uploader.api.Uploader;
 import io.github.llnancy.uploader.impl.local.LocalUploader;
 import io.github.llnancy.uploader.impl.local.config.LocalConfig;
 import io.github.nativegroup.spi.NativeServiceLoader;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -42,5 +43,16 @@ public class LocalUploaderTest {
         MockMultipartFile mockMultipartFile = new MockMultipartFile(file.getAbsolutePath(), file.getName(), MediaType.APPLICATION_OCTET_STREAM_VALUE, Files.newInputStream(file.toPath()));
         String upload = local.upload(mockMultipartFile);
         System.out.println(upload);
+    }
+
+    @Test
+    public void testDelete() {
+        LocalConfig config = new LocalConfig();
+        config.setServeDomain("file://");
+        config.setLocalPath("/Users/llnancy/workspace/data/test/");
+        Uploader local = NativeServiceLoader.getNativeServiceLoader(Uploader.class).getNativeService("io.github.llnancy.uploader.impl.local.LocalUploader");
+        local.setConfig(config);
+        boolean delete = local.delete("/Users/llnancy/workspace/data/test/123.py");
+        Assertions.assertTrue(delete);
     }
 }

@@ -31,14 +31,24 @@ public class UploaderAutoConfiguration {
     @Bean
     @ConditionalOnClass(UploaderProperties.class)
     public FileNameGenerator fileNameGenerator(UploaderProperties properties) {
-        return NativeServiceLoader.getNativeServiceLoader(FileNameGenerator.class).getOrDefaultNativeService(properties.getFileNameGeneratorClassName().getName());
+        return NativeServiceLoader.getNativeServiceLoader(FileNameGenerator.class)
+                .getOrDefaultNativeService(
+                        Optional.ofNullable(properties.getFileNameGeneratorClassName())
+                                .map(Class::getName)
+                                .orElse(null)
+                );
     }
 
     @Bean
     @ConditionalOnClass(UploaderProperties.class)
     @DependsOn("fileNameGenerator")
     public FileUriGenerator fileUriGenerator(UploaderProperties properties, FileNameGenerator fileNameGenerator) {
-        FileUriGenerator fileUriGenerator = NativeServiceLoader.getNativeServiceLoader(FileUriGenerator.class).getOrDefaultNativeService(properties.getFileUriGeneratorClassName().getName());
+        FileUriGenerator fileUriGenerator = NativeServiceLoader.getNativeServiceLoader(FileUriGenerator.class)
+                .getOrDefaultNativeService(
+                        Optional.ofNullable(properties.getFileUriGeneratorClassName())
+                                .map(Class::getName)
+                                .orElse(null)
+                );
         fileUriGenerator.setFileNameGenerator(fileNameGenerator);
         if (fileUriGenerator.getClass() == SpecifyPathFileUriGenerator.class) {
             SpecifyPathFileUriGenerator generator = (SpecifyPathFileUriGenerator) fileUriGenerator;
@@ -52,7 +62,12 @@ public class UploaderAutoConfiguration {
     @ConditionalOnClass(UploaderProperties.class)
     @DependsOn("fileUriGenerator")
     public Uploader uploader(UploaderProperties properties, FileUriGenerator fileUriGenerator) {
-        Uploader uploader = NativeServiceLoader.getNativeServiceLoader(Uploader.class).getOrDefaultNativeService(properties.getUploaderClassName().getName());
+        Uploader uploader = NativeServiceLoader.getNativeServiceLoader(Uploader.class)
+                .getOrDefaultNativeService(
+                        Optional.ofNullable(properties.getUploaderClassName())
+                                .map(Class::getName)
+                                .orElse(null)
+                );
         uploader.setFileUriGenerator(fileUriGenerator);
         // how to make the config more elegant?
         UploaderEnum.setConfig(uploader, properties);

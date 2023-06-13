@@ -94,5 +94,16 @@ public abstract class AbstractUploader implements Uploader {
         }
     }
 
+    @Override
+    public boolean delete(String path) throws UploaderException {
+        try {
+            return doDelete(path);
+        } catch (Exception e) {
+            throw new UploaderException(e);
+        }
+    }
+
     protected abstract String doUpload(MultipartFile mf, String fileUri) throws Exception;
+
+    protected abstract boolean doDelete(String path) throws Exception;
 }
