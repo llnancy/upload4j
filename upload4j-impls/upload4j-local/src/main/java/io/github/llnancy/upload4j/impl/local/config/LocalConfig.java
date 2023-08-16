@@ -17,5 +17,5 @@ public class LocalConfig extends Upload4jConfig {
     /**
      * 本地文件路径
      */
-    private String localPath = "/uploader";
+    private String localPath = "/upload4j";
 }

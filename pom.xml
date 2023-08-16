@@ -194,7 +194,7 @@
                 <repository>
                     <id>github</id>
                     <name>GitHub Packages</name>
-                    <url>https://maven.pkg.github.com/llnancy/uploader</url>
+                    <url>https://maven.pkg.github.com/llnancy/upload4j</url>
                 </repository>
             </distributionManagement>
         </profile>
