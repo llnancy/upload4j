@@ -7,7 +7,11 @@ import io.github.llnancy.upload4j.core.AbstractUploader;
 import io.github.llnancy.upload4j.impl.local.config.LocalConfig;
 import io.github.nativegroup.spi.NativeServiceLoader;
 import lombok.Getter;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
+
+import java.nio.file.Path;
 
 /**
  * 本地文件上传器
@@ -34,7 +38,14 @@ public class LocalUploader extends AbstractUploader {
     }
 
     @Override
-    protected String doUpload(MultipartFile mf, String fileUri) throws Exception {
+    protected Mono<String> doFilePartUpload(FilePart fp, String fileUri) throws Exception {
+        String targetUri = this.config.getLocalPath() + fileUri;
+        return fp.transferTo(Path.of(targetUri))
+                .then(Mono.defer(() -> Mono.just(this.getProtocolHost() + targetUri)));
+    }
+
+    @Override
+    protected String doMultipartFileUpload(MultipartFile mf, String fileUri) throws Exception {
         String targetUri = this.config.getLocalPath() + fileUri;
         FileUtil.writeFromStream(mf.getInputStream(), targetUri);
         return this.getProtocolHost() + targetUri;

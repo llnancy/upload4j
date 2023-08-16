@@ -1,7 +1,6 @@
 package io.github.llnancy.upload4j.api;
 
 import io.github.nativegroup.spi.SPI;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 文件名生成器
@@ -12,5 +11,5 @@ import org.springframework.web.multipart.MultipartFile;
 @SPI("io.github.llnancy.upload4j.core.fn.OriginalFileNameGenerator")
 public interface FileNameGenerator {
 
-    String generate(MultipartFile mf);
+    String generate(FileGeneratorContext context);
 }

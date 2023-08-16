@@ -4,8 +4,10 @@ import io.github.llnancy.upload4j.api.config.Upload4jConfig;
 import io.github.llnancy.upload4j.api.exceptions.Upload4jException;
 import io.github.nativegroup.spi.SPI;
 import org.springframework.http.MediaType;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,6 +80,25 @@ public interface Uploader {
      * @throws Upload4jException ex
      */
     String upload(MultipartFile mf, String basePath) throws Upload4jException;
+
+    /**
+     * upload {@link FilePart}
+     *
+     * @param fp {@link FilePart}
+     * @return server url
+     * @throws Upload4jException ex
+     */
+    Mono<String> upload(FilePart fp) throws Upload4jException;
+
+    /**
+     * upload {@link FilePart} with base path
+     *
+     * @param fp       {@link FilePart}
+     * @param basePath base path
+     * @return server url
+     * @throws Upload4jException ex
+     */
+    Mono<String> upload(FilePart fp, String basePath) throws Upload4jException;
 
     /**
      * delete file

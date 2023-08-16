@@ -1,11 +1,11 @@
 package io.github.llnancy.upload4j.core.fu;
 
+import io.github.llnancy.upload4j.api.FileGeneratorContext;
 import io.github.llnancy.upload4j.api.FileNameGenerator;
 import io.github.nativegroup.spi.NativeServiceLoader;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 指定路径
@@ -37,7 +37,7 @@ public class SpecifyPathFileUriGenerator extends AbstractFileUriGenerator {
     }
 
     @Override
-    protected String doGenerate(MultipartFile mf) {
+    protected String doGenerate(FileGeneratorContext context) {
         // eg. path/to
         return StringUtils.isBlank(specifyPath) ? DEFAULT_SPECIFY_PATH : specifyPath;
     }

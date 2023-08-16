@@ -1,7 +1,6 @@
 package io.github.llnancy.upload4j.api;
 
 import io.github.nativegroup.spi.SPI;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 文件路径生成器
@@ -12,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 @SPI("io.github.llnancy.upload4j.core.fu.SpecifyPathFileUriGenerator")
 public interface FileUriGenerator {
 
-    String generate(MultipartFile mf);
+    String generate(FileGeneratorContext context);
 
     void setFileNameGenerator(FileNameGenerator fileNameGenerator);
 }

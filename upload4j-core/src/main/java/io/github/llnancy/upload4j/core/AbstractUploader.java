@@ -1,19 +1,23 @@
 package io.github.llnancy.upload4j.core;
 
-import cn.hutool.core.io.FileTypeUtil;
 import com.google.common.base.Preconditions;
+import io.github.llnancy.upload4j.api.FileGeneratorContext;
 import io.github.llnancy.upload4j.api.FileUriGenerator;
 import io.github.llnancy.upload4j.api.Uploader;
 import io.github.llnancy.upload4j.api.config.Upload4jConfig;
 import io.github.llnancy.upload4j.api.exceptions.Upload4jException;
+import io.github.llnancy.upload4j.api.util.FileUtils;
 import io.github.llnancy.upload4j.core.fu.SpecifyPathFileUriGenerator;
 import io.github.nativegroup.spi.NativeServiceLoader;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Objects;
 
 /**
  * 抽象文件上传器
@@ -79,16 +83,39 @@ public abstract class AbstractUploader implements Uploader {
     @Override
     public String upload(MultipartFile mf, String basePath) throws Upload4jException {
         try {
-            String type = FileTypeUtil.getType(mf.getInputStream(), mf.getOriginalFilename());
+            String type = FileUtils.getFileExtension(Objects.requireNonNull(mf.getOriginalFilename()));
             Preconditions.checkArgument(supportFileType(type), "文件格式有误");
-            String fileUri = this.fileUriGenerator.generate(mf);
+            String fileUri = this.fileUriGenerator.generate(FileGeneratorContext.create(mf));
             if (StringUtils.isNotEmpty(basePath) && !StringUtils.startsWith(basePath, "/")) {
                 basePath = "/" + basePath;
             }
             if (StringUtils.isNotEmpty(basePath) && !StringUtils.endsWith(basePath, "/")) {
                 basePath = basePath + "/";
             }
-            return doUpload(mf, new URL(this.getServeDomain()).getPath() + basePath + fileUri);
+            return doMultipartFileUpload(mf, new URL(this.getServeDomain()).getPath() + basePath + fileUri);
+        } catch (Exception e) {
+            throw new Upload4jException(e);
+        }
+    }
+
+    @Override
+    public Mono<String> upload(FilePart fp) throws Upload4jException {
+        return upload(fp, SpecifyPathFileUriGenerator.DEFAULT_SPECIFY_PATH);
+    }
+
+    @Override
+    public Mono<String> upload(FilePart fp, String basePath) throws Upload4jException {
+        try {
+            String type = FileUtils.getFileExtension(Objects.requireNonNull(fp.filename()));
+            Preconditions.checkArgument(supportFileType(type), "文件格式有误");
+            String fileUri = this.fileUriGenerator.generate(FileGeneratorContext.create(fp));
+            if (StringUtils.isNotEmpty(basePath) && !StringUtils.startsWith(basePath, "/")) {
+                basePath = "/" + basePath;
+            }
+            if (StringUtils.isNotEmpty(basePath) && !StringUtils.endsWith(basePath, "/")) {
+                basePath = basePath + "/";
+            }
+            return doFilePartUpload(fp, new URL(this.getServeDomain()).getPath() + basePath + fileUri);
         } catch (Exception e) {
             throw new Upload4jException(e);
         }
@@ -103,7 +130,9 @@ public abstract class AbstractUploader implements Uploader {
         }
     }
 
-    protected abstract String doUpload(MultipartFile mf, String fileUri) throws Exception;
+    protected abstract Mono<String> doFilePartUpload(FilePart fp, String fileUri) throws Exception;
+
+    protected abstract String doMultipartFileUpload(MultipartFile mf, String fileUri) throws Exception;
 
     protected abstract boolean doDelete(String path) throws Exception;
 }

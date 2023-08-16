@@ -3,9 +3,9 @@ package io.github.llnancy.upload4j.core.fn;
 import cn.hutool.core.text.StrPool;
 import io.github.llnancy.mojian.base.util.IdUtils;
 import io.github.llnancy.mojian.base.util.ImageUtils;
+import io.github.llnancy.upload4j.api.FileGeneratorContext;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * FileName: height_width-UUID.fileSuffix
@@ -17,8 +17,8 @@ public class ExtensionImageFileNameGenerator extends AbstractFileNameGenerator {
 
     @SneakyThrows
     @Override
-    protected String doGenerate(MultipartFile mf, String fileSuffix) {
-        ImmutablePair<Integer, Integer> hw = ImageUtils.getImageHeightAndWidth(mf);
+    protected String doGenerate(FileGeneratorContext context, String fileSuffix) {
+        ImmutablePair<Integer, Integer> hw = ImageUtils.getImageHeightAndWidth(context.getMf());
         Integer height = hw.getLeft();
         Integer width = hw.getRight();
         return height + StrPool.UNDERLINE + width + StrPool.DASHED + IdUtils.simpleUUIDWithSuffix(fileSuffix);

@@ -15,7 +15,7 @@
         <dependency>
             <groupId>io.github.llnancy</groupId>
             <artifactId>upload4j-core</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.upyun</groupId>

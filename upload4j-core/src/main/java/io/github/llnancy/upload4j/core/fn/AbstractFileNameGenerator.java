@@ -1,9 +1,9 @@
 package io.github.llnancy.upload4j.core.fn;
 
-import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.text.StrPool;
+import io.github.llnancy.upload4j.api.FileGeneratorContext;
 import io.github.llnancy.upload4j.api.FileNameGenerator;
-import org.springframework.web.multipart.MultipartFile;
+import io.github.llnancy.upload4j.api.util.FileUtils;
 
 /**
  * an abstract {@link FileNameGenerator } implementation.
@@ -14,10 +14,10 @@ import org.springframework.web.multipart.MultipartFile;
 public abstract class AbstractFileNameGenerator implements FileNameGenerator {
 
     @Override
-    public String generate(MultipartFile mf) {
-        String fileSuffix = StrPool.DOT + FileUtil.extName(mf.getOriginalFilename());
-        return doGenerate(mf, fileSuffix);
+    public String generate(FileGeneratorContext context) {
+        String fileSuffix = StrPool.DOT + FileUtils.getFileExtension(context.getFilename());
+        return doGenerate(context, fileSuffix);
     }
 
-    protected abstract String doGenerate(MultipartFile mf, String fileSuffix);
+    protected abstract String doGenerate(FileGeneratorContext context, String fileSuffix);
 }

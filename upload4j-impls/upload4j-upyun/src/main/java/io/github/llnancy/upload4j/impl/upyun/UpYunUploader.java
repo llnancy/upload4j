@@ -15,7 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.Headers;
 import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 
 import java.util.Objects;
 
@@ -70,22 +73,50 @@ public class UpYunUploader extends AbstractUploader {
     }
 
     @Override
-    protected String doUpload(MultipartFile mf, String fileUri) throws Exception {
+    protected Mono<String> doFilePartUpload(FilePart fp, String fileUri) throws Exception {
+        return Mono.fromCallable(() -> this.restManager.getFileInfo(fileUri))
+                .flatMap(fileInfo -> {
+                    Headers headers = fileInfo.headers();
+                    String fileSize = headers.get(RestManager.PARAMS.X_UPYUN_FILE_SIZE.getValue());
+                    return DataBufferUtils.join(fp.content())
+                            .flatMap(dataBuffer -> {
+                                byte[] bytes = new byte[dataBuffer.readableByteCount()];
+                                dataBuffer.read(bytes);
+                                DataBufferUtils.release(dataBuffer);
+
+                                String newMd5 = UpYunUtils.md5(bytes);
+                                if (StringUtils.isNotBlank(fileSize) && newMd5.equals(headers.get(RestManager.PARAMS.CONTENT_MD5.getValue()))) {
+                                    log.warn("[upyun] - 又拍云文件上传，文件名：{}，md5值相同，上传文件重复", fileUri);
+                                    return Mono.just(this.getProtocolHost() + fileUri);
+                                }
+                                return Mono.fromCallable(() -> this.restManager.writeFile(fileUri, bytes, MapUtil.of(RestManager.PARAMS.CONTENT_MD5.getValue(), newMd5)))
+                                        .flatMap(response -> {
+                                            if (response.isSuccessful()) {
+                                                return Mono.just(this.getProtocolHost() + fileUri);
+                                            } else {
+                                                log.error("[upyun] - 又拍云文件上传失败，response={}", response);
+                                                return Mono.error(new Upload4jException("[upyun] - 又拍云文件上传失败，fileUri=" + fileUri));
+                                            }
+                                        });
+                            });
+                });
+    }
+
+    @Override
+    protected String doMultipartFileUpload(MultipartFile mf, String fileUri) throws Exception {
         Response fileInfo = null;
         Response response = null;
         try {
             fileInfo = this.restManager.getFileInfo(fileUri);
             Headers headers = fileInfo.headers();
             String fileSize = headers.get(RestManager.PARAMS.X_UPYUN_FILE_SIZE.getValue());
-            String newMd5 = UpYunUtils.md5(mf.getBytes());
-            if (StringUtils.isNotBlank(fileSize)) {
-                String oldMd5 = headers.get(RestManager.PARAMS.CONTENT_MD5.getValue());
-                if (newMd5.equals(oldMd5)) {
-                    log.warn("[upyun] - 又拍云文件上传，文件名：{}，md5值相同，上传文件重复", fileUri);
-                    return this.getProtocolHost() + fileUri;
-                }
+            byte[] bytes = mf.getBytes();
+            String newMd5 = UpYunUtils.md5(bytes);
+            if (StringUtils.isNotBlank(fileSize) && newMd5.equals(headers.get(RestManager.PARAMS.CONTENT_MD5.getValue()))) {
+                log.warn("[upyun] - 又拍云文件上传，文件名：{}，md5值相同，上传文件重复", fileUri);
+                return this.getProtocolHost() + fileUri;
             }
-            response = this.restManager.writeFile(fileUri, mf.getInputStream(), MapUtil.of(RestManager.PARAMS.CONTENT_MD5.getValue(), newMd5));
+            response = this.restManager.writeFile(fileUri, bytes, MapUtil.of(RestManager.PARAMS.CONTENT_MD5.getValue(), newMd5));
             if (response.isSuccessful()) {
                 return this.getProtocolHost() + fileUri;
             }
