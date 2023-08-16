@@ -1,2 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  io.github.llnancy.upload4j.autoconfigure.Upload4jAutoConfiguration
