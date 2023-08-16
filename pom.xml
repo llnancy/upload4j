@@ -5,19 +5,19 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.llnancy</groupId>
-    <artifactId>uploader</artifactId>
+    <artifactId>upload4j</artifactId>
     <version>${revision}</version>
 
     <packaging>pom</packaging>
 
-    <name>uploader</name>
+    <name>upload4j</name>
     <description>文件上传器</description>
-    <url>https://github.com/llnancy/uploader.git</url>
+    <url>https://github.com/llnancy/upload4j.git</url>
 
     <scm>
-        <url>https://github.com/llnancy/uploader</url>
-        <connection>scm:git:https://github.com/llnancy/uploader.git</connection>
-        <developerConnection>scm:git:https://github.com/llnancy/uploader.git</developerConnection>
+        <url>https://github.com/llnancy/upload4j</url>
+        <connection>scm:git:https://github.com/llnancy/upload4j.git</connection>
+        <developerConnection>scm:git:https://github.com/llnancy/upload4j.git</developerConnection>
     </scm>
 
     <developers>
@@ -36,11 +36,11 @@
     </licenses>
 
     <modules>
-        <module>uploader-core</module>
-        <module>uploader-spring-boot-autoconfigure</module>
-        <module>uploader-api</module>
-        <module>uploader-impls</module>
-        <module>uploader-spring-boot-starter</module>
+        <module>upload4j-core</module>
+        <module>upload4j-spring-boot-autoconfigure</module>
+        <module>upload4j-api</module>
+        <module>upload4j-impls</module>
+        <module>upload4j-spring-boot-starter</module>
     </modules>
 
     <properties>

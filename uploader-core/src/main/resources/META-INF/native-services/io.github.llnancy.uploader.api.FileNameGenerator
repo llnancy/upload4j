@@ -1,3 +1,0 @@
-io.github.llnancy.uploader.core.fn.OriginalFileNameGenerator
-io.github.llnancy.uploader.core.fn.UUIDFileNameGenerator
-io.github.llnancy.uploader.core.fn.ExtensionImageFileNameGenerator
