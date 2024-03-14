@@ -1,18 +1,13 @@
 package io.github.llnancy.upload4j.api;
 
-import io.github.llnancy.upload4j.api.config.Upload4jConfig;
 import io.github.llnancy.upload4j.api.exceptions.Upload4jException;
 import io.github.nativegroup.spi.SPI;
 import org.springframework.http.MediaType;
-import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
-import reactor.core.publisher.Mono;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.Files;
 
 /**
@@ -22,12 +17,7 @@ import java.nio.file.Files;
  * @since JDK8 2022/6/27
  */
 @SPI
-public interface Uploader {
-
-    /**
-     * init
-     */
-    void init();
+public interface Uploader extends BaseUploader {
 
     /**
      * upload {@link File}
@@ -82,25 +72,6 @@ public interface Uploader {
     String upload(MultipartFile mf, String basePath) throws Upload4jException;
 
     /**
-     * upload {@link FilePart}
-     *
-     * @param fp {@link FilePart}
-     * @return server url
-     * @throws Upload4jException ex
-     */
-    Mono<String> upload(FilePart fp) throws Upload4jException;
-
-    /**
-     * upload {@link FilePart} with base path
-     *
-     * @param fp       {@link FilePart}
-     * @param basePath base path
-     * @return server url
-     * @throws Upload4jException ex
-     */
-    Mono<String> upload(FilePart fp, String basePath) throws Upload4jException;
-
-    /**
      * delete file
      * example: new URL(urlString).getPath();
      *
@@ -109,26 +80,4 @@ public interface Uploader {
      * @throws Upload4jException ex
      */
     boolean delete(String path) throws Upload4jException;
-
-    default String getPath(String url) {
-        try {
-            return new URL(url).getPath();
-        } catch (MalformedURLException e) {
-            throw new Upload4jException(e);
-        }
-    }
-
-    /**
-     * set config
-     *
-     * @param config {@link Upload4jConfig}
-     */
-    void setConfig(Upload4jConfig config);
-
-    /**
-     * set {@link FileUriGenerator}
-     *
-     * @param fileUriGenerator {@link FileUriGenerator}
-     */
-    void setFileUriGenerator(FileUriGenerator fileUriGenerator);
 }

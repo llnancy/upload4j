@@ -1,1 +1,1 @@
-io.github.llnancy.upload4j.impl.local.LocalUploader
+io.github.llnancy.upload4j.impl.local.LocalUploaderImpl

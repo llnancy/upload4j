@@ -1,0 +1,4 @@
+io.github.llnancy.upload4j.core.fn.OriginalFilenameGenerator
+io.github.llnancy.upload4j.core.fn.UUIDFilenameGenerator
+io.github.llnancy.upload4j.core.fn.ExtensionImageFilenameGenerator
+io.github.llnancy.upload4j.core.fn.TimestampFilenameGenerator

@@ -1,5 +1,7 @@
 package io.github.llnancy.upload4j.api.exceptions;
 
+import java.io.Serial;
+
 /**
  * 自定义异常
  *
@@ -8,6 +10,7 @@ package io.github.llnancy.upload4j.api.exceptions;
  */
 public class Upload4jException extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = -3926466561427504553L;
 
     public Upload4jException() {

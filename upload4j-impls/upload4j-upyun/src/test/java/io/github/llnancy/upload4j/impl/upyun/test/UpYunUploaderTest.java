@@ -3,7 +3,7 @@ package io.github.llnancy.upload4j.impl.upyun.test;
 import io.github.llnancy.upload4j.api.FileUriGenerator;
 import io.github.llnancy.upload4j.api.Uploader;
 import io.github.llnancy.upload4j.core.fu.SpecifyPathFileUriGenerator;
-import io.github.llnancy.upload4j.impl.upyun.UpYunUploader;
+import io.github.llnancy.upload4j.impl.upyun.UpYunUploaderImpl;
 import io.github.llnancy.upload4j.impl.upyun.config.UpYunConfig;
 import io.github.nativegroup.spi.NativeServiceLoader;
 import org.junit.Test;
@@ -15,7 +15,7 @@ import java.io.File;
 import java.nio.file.Files;
 
 /**
- * Test {@link UpYunUploader}
+ * Test {@link UpYunUploaderImpl}
  *
  * @author sunchaser admin@lilu.org.cn
  * @since JDK8 2023/1/4

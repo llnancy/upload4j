@@ -1,7 +1,6 @@
 package io.github.llnancy.upload4j.core.fu;
 
 import io.github.llnancy.upload4j.api.FileGeneratorContext;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 

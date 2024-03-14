@@ -13,7 +13,9 @@
     <packaging>pom</packaging>
     <modules>
         <module>upload4j-local</module>
+        <module>upload4j-reactive-local</module>
         <module>upload4j-upyun</module>
+        <module>upload4j-reactive-upyun</module>
     </modules>
 
 </project>

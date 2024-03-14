@@ -1,7 +1,7 @@
 package io.github.llnancy.upload4j.core.fu;
 
 import io.github.llnancy.upload4j.api.FileGeneratorContext;
-import io.github.llnancy.upload4j.api.FileNameGenerator;
+import io.github.llnancy.upload4j.api.FilenameGenerator;
 import io.github.llnancy.upload4j.api.FileUriGenerator;
 import io.github.nativegroup.spi.NativeServiceLoader;
 import lombok.Setter;
@@ -16,13 +16,13 @@ import org.apache.commons.lang3.StringUtils;
 @Setter
 public abstract class AbstractFileUriGenerator implements FileUriGenerator {
 
-    private FileNameGenerator fileNameGenerator;
+    private FilenameGenerator fileNameGenerator;
 
     public AbstractFileUriGenerator() {
-        this.fileNameGenerator = NativeServiceLoader.getNativeServiceLoader(FileNameGenerator.class).getDefaultNativeService();
+        this.fileNameGenerator = NativeServiceLoader.getNativeServiceLoader(FilenameGenerator.class).getDefaultNativeService();
     }
 
-    public AbstractFileUriGenerator(FileNameGenerator fileNameGenerator) {
+    public AbstractFileUriGenerator(FilenameGenerator fileNameGenerator) {
         this.fileNameGenerator = fileNameGenerator;
     }
 
@@ -32,7 +32,7 @@ public abstract class AbstractFileUriGenerator implements FileUriGenerator {
         if (StringUtils.isNotBlank(fileUri)) {
             return fileUri + "/" + fileNameGenerator.generate(context);
         } else {
-            return "/" + fileNameGenerator.generate(context);
+            return fileNameGenerator.generate(context);
         }
     }
 

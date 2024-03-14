@@ -21,7 +21,7 @@ public enum FileExtNameEnum {
     GIF("gif", "GIF (gif)"),
 
     TIFF("tif", "TIFF (tif)"),
-    BMP("bmp", "16色位图(bmp)/24色位图(bmp)/256色位图(bmp)"),
+    BMP("bmp", "16 色位图 (bmp)/24 色位图 (bmp)/256 色位图 (bmp)"),
     DWG("dwg", "CAD (dwg)"),
     ;
 
